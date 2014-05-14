@@ -1,0 +1,13 @@
+#!/bin/bash
+
+words=$*
+
+while read line; do
+	for w in $words; do
+		if [[ $line == *$w* ]]; then
+			echo -e "\e[0;31m$line\e[0;0m"
+		else
+			echo $line
+		fi
+	done
+done

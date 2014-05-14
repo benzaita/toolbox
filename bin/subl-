@@ -1,0 +1,9 @@
+#!/bin/bash
+
+f=$(mktemp)
+
+# dump stdin to $f
+cat > $f
+
+# open $f with Sublime
+subl $f $*

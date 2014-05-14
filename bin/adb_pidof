@@ -1,0 +1,10 @@
+#!/bin/bash
+
+pname=$1
+
+if [[ "$pname" == "" ]]; then
+	echo usage: $0 name
+	exit 1
+fi
+
+eval "adb shell 'ps | grep $pname' | awk '{print \$2;}'"

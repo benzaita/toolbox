@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# shows a graphical representation of `adb shell top | grep <NAME>`
+
+pname=$1
+interval=0.5
+summary_interval_samples=30 # number of samples between summaries
+
+if [[ "$pname" == "" ]]; then
+	echo "usage: $0 <NAME>"
+	exit 1
+fi
+
+samples_until_summary=$summary_interval_samples
+total_load=0
+
+while [[ 1 ]]; do
+	cpuload=$(adb shell "top -d $interval -n 1 -m 10" |  grep -F $pname | awk '{print $3;}' | tr -d "%")
+	if [[ "$cpuload" != "" ]]; then
+		for i in `seq $cpuload`; do
+			echo -n "."
+		done
+	fi
+
+	[[ "$cpuload" == "" ]] && cpuload=0
+
+	echo " $cpuload%"
+
+	total_load=$(( $total_load + $cpuload ))
+	samples_until_summary=$(( $samples_until_summary - 1 ))
+
+	if [[ $samples_until_summary -eq 0 ]]; then
+		summary="average: $(( $total_load / $summary_interval_samples ))%"
+		echo -e "\e[2;39m$summary\e[0;0m"		
+
+		samples_until_summary=$summary_interval_samples
+		total_load=0
+	fi
+done
+

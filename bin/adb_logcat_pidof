@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# runs `adb logcat` and filters only messages from the PID of <NAME>
+pname=$1
+
+if [[ "$pname" == "" ]]; then
+	echo "usage: $0 <NAME>"
+	exit 1
+fi
+
+eval "adb logcat | grep -F \"\$(~/work/bin/adb_pidof \$pname)\""

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ ! ${CROSS_COMPILE} ]
+then
+        echo "please define \$CROSS_COMPILE"
+        exit 1
+fi
+
+binfile="$1"
+func_name="$2"
+offset_in_func="$3"
+
+if [ ! $binfile ] || [ ! $func_name ] || [ ! $offset_in_func ]
+then
+        echo "usage: $0 <bin file> <exact function name> <dec offset in function>"
+        exit 1
+fi
+
+# dump symbol table | grep function | print offset | trim leading zeros
+func_offset=`${CROSS_COMPILE}objdump -C -t $binfile | grep $func_name\( | awk '{ print $1; }' | sed -r 's:^0+::'`
+
+# calculate absolute offset
+absolute_offset=`printf '0x%x' $((0x$func_offset + $offset_in_func))`
+
+# query addr2line
+${CROSS_COMPILE}addr2line -e $binfile $absolute_offset

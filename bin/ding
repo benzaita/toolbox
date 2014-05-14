@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# make a beep sound
+
+echo -e '\007'
+exit 0
